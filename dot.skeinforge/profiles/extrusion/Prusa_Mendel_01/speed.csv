@@ -13,4 +13,4 @@ Flow Rate Setting (float):	50.0
 Orbital Feed Rate over Operating Feed Rate (ratio):	0.5
 Perimeter Feed Rate over Operating Feed Rate (ratio):	0.8
 Perimeter Flow Rate over Operating Flow Rate (ratio):	0.8
-Travel Feed Rate (mm/s):	100.0
+Travel Feed Rate (mm/s):	60.0
