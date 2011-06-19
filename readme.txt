@@ -3,7 +3,7 @@ BronzeBot is Hive76's Sells Mendel made with coldcast bronze powder and molded r
 In this repo is the entire toolchain to program and print with a RepRap, in this case BronzeBot.
 
 -Chris Thompson
-secretary, hice76
+secretary, hive76
 
 http://hive76.org
 http://reprap.org 
