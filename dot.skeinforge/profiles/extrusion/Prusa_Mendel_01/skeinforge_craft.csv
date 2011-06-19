@@ -3,7 +3,7 @@ _Name                          	Value
 WindowPosition	600+0
 Open File for Craft	/home/steve/Downloads/octopus_v04_scaled0_7.stl
 bottom	False
-carve	False
+carve	True
 chamber	False
 chop	False
 cleave	False
@@ -36,7 +36,7 @@ skirt	False
 speed	False
 splodge	False
 stretch	False
-temperature	True
+temperature	False
 tower	False
 unpause	False
 whittle	False
