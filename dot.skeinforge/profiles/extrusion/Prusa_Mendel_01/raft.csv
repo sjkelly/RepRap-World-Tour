@@ -32,6 +32,6 @@ Support Flow Rate over Operating Flow Rate (ratio):	0.65
 Support Gap over Perimeter Extrusion Width (ratio):	0.0
 None	False
 Empty Layers Only	False
-Everywhere	True
-Exterior Only	False
+Everywhere	False
+Exterior Only	True
 Support Minimum Angle (degrees):	60.0
