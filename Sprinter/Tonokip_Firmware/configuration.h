@@ -17,10 +17,10 @@
 //#define STEP_DELAY_RATIO 0.25
 
 //Comment this to disable ramp acceleration
-#define RAMP_ACCELERATION 1
+//#define RAMP_ACCELERATION 1
 
 //Uncomment this to enable exponential acceleration
-//#define EXP_ACCELERATION 1
+#define EXP_ACCELERATION 1
 
 //Acceleration settings
 #ifdef RAMP_ACCELERATION

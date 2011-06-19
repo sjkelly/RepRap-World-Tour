@@ -2,7 +2,7 @@ Format is tab separated skeinforge craft settings.
 _Name                          	Value
 WindowPosition	600+0
 Open File for Craft	/home/steve/Downloads/octopus_v04_scaled0_7.stl
-bottom	True
+bottom	False
 carve	False
 chamber	False
 chop	False
@@ -22,7 +22,7 @@ home	False
 hop	False
 inset	False
 jitter	False
-lash	False
+lash	True
 lift	False
 limit	False
 mill	False
