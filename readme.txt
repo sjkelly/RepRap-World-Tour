@@ -7,3 +7,6 @@ secretary, hive76
 
 http://hive76.org
 http://reprap.org 
+
+Helpful toolchain hints
+-Disconnect pronterface before uploading firmware via Arduino
