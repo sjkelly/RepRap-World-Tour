@@ -468,10 +468,10 @@ inline void process_commands()
         break;
       case 28: //G28 Home all Axis one at a time
         saved_feedrate = feedrate;
-        destination_x = 0;
-        current_x = 0;
         destination_y = 0;
         current_y = 0;
+        destination_x = 0;
+        current_x = 0;
         destination_z = 0;
         current_z = 0;
         destination_e = 0;
