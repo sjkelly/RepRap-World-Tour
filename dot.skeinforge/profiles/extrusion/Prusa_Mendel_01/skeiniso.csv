@@ -2,7 +2,7 @@ Format is tab separated skeiniso settings.
 _Name                          	Value
 WindowPosition	700+0
 Open File for Skeiniso	
-Activate Skeiniso	True
+Activate Skeiniso	False
 Frame List
 Animation Line Quickening (ratio):	1.0
 Animation Slide Show Rate (layers/second):	2.0
@@ -18,8 +18,8 @@ Layer (index):	0
 Layer Extra Span (integer):	912345678
 Line (index):	121
 Display Line	False
-View Move	False
-View Rotate	True
+View Move	True
+View Rotate	False
 Number of Fill Bottom Layers (integer):	1
 Number of Fill Top Layers (integer):	1
 Scale (pixels per millimeter):	15.0
