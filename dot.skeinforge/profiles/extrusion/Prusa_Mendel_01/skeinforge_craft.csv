@@ -22,7 +22,7 @@ home	False
 hop	False
 inset	False
 jitter	False
-lash	True
+lash	False
 lift	False
 limit	False
 mill	False
@@ -30,7 +30,7 @@ multiply	False
 oozebane	False
 outset	False
 preface	False
-raft	False
+raft	True
 scale	False
 skirt	False
 speed	False
