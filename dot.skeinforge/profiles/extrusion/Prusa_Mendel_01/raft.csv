@@ -30,8 +30,8 @@ Raft Margin (mm):	3.0
 Support Cross Hatch	True
 Support Flow Rate over Operating Flow Rate (ratio):	0.65
 Support Gap over Perimeter Extrusion Width (ratio):	0.0
-None	False
+None	True
 Empty Layers Only	False
 Everywhere	False
-Exterior Only	True
+Exterior Only	False
 Support Minimum Angle (degrees):	60.0
