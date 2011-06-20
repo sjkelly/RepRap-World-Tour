@@ -145,9 +145,9 @@ const int Z_HOME_DIR = -1;
 const bool ENDSTOPS_INVERTING = false;
 const bool min_software_endstops = false; //If true, axis won't move to coordinates less than zero.
 const bool max_software_endstops = true;  //If true, axis won't move to coordinates greater than the defined lengths below.
-const int X_MAX_LENGTH = 220;
-const int Y_MAX_LENGTH = 220;
-const int Z_MAX_LENGTH = 100;
+const int X_MAX_LENGTH = 194;
+const int Y_MAX_LENGTH = 210;
+const int Z_MAX_LENGTH = 112;
 
 #define BAUDRATE 115200
 
