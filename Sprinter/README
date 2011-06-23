@@ -1,0 +1,24 @@
+The leading developers of Sprinter are currently Kliment and caru, though many others contribute with their patches.
+
+This is a firmware for RAMPS and other reprap single-processor electronics setups. It supports printing from SD card, active heatbed control, and ATmega internal pullups.
+
+This work is licensed under the GNU GPL v3 or (at the user's discretion) any later version.
+
+It is based on Tonokips's firmware, which was licensed under GPL v2 or later.
+
+WARNING: This version (April 19th, 2011) fixes a bug that caused speeds to be lower than what
+    set in GCODE. So before attempting any print, you will have to check all
+    your axis max speed, including the extruder retract speed. Not following
+    this guidelines can seriously damage your printer.
+
+The configuration file now has an option to set the wanted temperature table file. If you copy and paste a temperature file from older versions, make sure that the configuration is pointing to it. For example:
+#include "ThermistorTable.h"
+
+In addition, you can optionally use a different thermistor table for hot-end and bed. To do so, comment out the following lines in configuration.h:
+#define BNUMTEMPS NUMPTEMPS
+#define bedtemptable temptable
+Then add a line pointing to your second thermistor table, for example:
+#include "BedThermistorTable.h"
+Finally, make sure that the nozzle thermistor table, inside ThermistorTable.h in this case, is defined as "temptable" and that the bed thermistor table is defined as "bedtemptable", and that the number of temps is defined as NUMTEMPS for the heater and BNUMTEMPS for the bed.
+
+There are examples of all these configurations in the configuration.h file. Please look at them before you change anything.
