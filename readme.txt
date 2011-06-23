@@ -1,6 +1,6 @@
 The RepRap World Tour is the first RepRap workshop in the US. 
-Students get a full kit, 30 hours of instruction, and the most up-to-date toolchain
-In this repo is the entire toolchain to program and print with a RepRap, in this case BronzeBot.
+Students get a full kit, 30 hours of instruction, and the most up-to-date toolchain.
+In this repo is the entire toolchain to program and print with a RepRap Prusa Mendel printer.
 
 -Chris Thompson
 secretary, hive76
