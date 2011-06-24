@@ -280,7 +280,6 @@
 #define BEEP_PIN           47
 
 
-
 #ifdef RAMPS_V_1_0 // RAMPS_V_1_0
   #define HEATER_0_PIN     12    // RAMPS 1.0
   #define HEATER_1_PIN     -1    // RAMPS 1.0
