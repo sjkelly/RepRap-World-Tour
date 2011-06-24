@@ -4,7 +4,7 @@ WindowPosition	600+0
 Open File for Craft	/home/steve/Downloads/octopus_v04_scaled0_7.stl
 bottom	False
 carve	False
-chamber	False
+chamber	True
 chop	False
 cleave	False
 clip	False
@@ -30,7 +30,7 @@ multiply	False
 oozebane	False
 outset	False
 preface	False
-raft	True
+raft	False
 scale	False
 skirt	False
 speed	False
