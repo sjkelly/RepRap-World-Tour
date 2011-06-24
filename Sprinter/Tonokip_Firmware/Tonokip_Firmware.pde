@@ -54,6 +54,7 @@
 // M190 - Wait for bed current temp to reach target temp.
 // M201 - Set max acceleration in units/s^2 for print moves (M201 X1000 Y1000)
 // M202 - Set max acceleration in units/s^2 for travel moves (M202 X1000 Y1000)
+// M250 - Beep, used for end of print. 
 
 
 //Stepper Movement Variables
@@ -782,6 +783,9 @@ inline void process_commands()
       case 202: // M202
         if(code_seen('X')) x_travel_steps_per_sqr_second = code_value() * x_steps_per_unit;
         if(code_seen('Y')) y_travel_steps_per_sqr_second = code_value() * y_steps_per_unit;
+        break;
+      case 250: //M250
+        tone(BEEP_PIN, 440, 1000); //(pin, frequency, duration)
         break;
       #endif
     }
