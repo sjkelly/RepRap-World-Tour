@@ -277,7 +277,7 @@
 #define LED_PIN            13
 #define PS_ON_PIN          -1
 #define KILL_PIN           -1
-#define BEEP_PIN           52
+#define BEEP_PIN           47
 
 
 
