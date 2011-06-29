@@ -1,7 +1,7 @@
 Format is tab separated skeinforge settings.
 _Name                          	Value
 WindowPosition	228+22
-Open File for Skeinforge	/Users/eagleapex/Downloads/10x40mmtower.stl
+Open File for Skeinforge	/Users/eagleapex/Dropbox/Nickel holder/cap (fixed).stl
 analyze	False
 craft	True
 help	False
