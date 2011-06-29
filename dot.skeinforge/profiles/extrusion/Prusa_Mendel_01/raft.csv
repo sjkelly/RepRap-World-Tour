@@ -20,10 +20,10 @@ Interface Layers (integer):	0
 Interface Nozzle Lift over Interface Layer Thickness (ratio):	0.2
 Name of Support End File:	support_end.gcode
 Name of Support Start File:	support_start.gcode
-Object First Layer Feed Rate Infill Multiplier (ratio):	0.5
-Object First Layer Feed Rate Perimeter Multiplier (ratio):	0.5
-Object First Layer Flow Rate Infill Multiplier (ratio):	0.7
-Object First Layer Flow Rate Perimeter Multiplier (ratio):	0.7
+Object First Layer Feed Rate Infill Multiplier (ratio):	0.7
+Object First Layer Feed Rate Perimeter Multiplier (ratio):	0.7
+Object First Layer Flow Rate Infill Multiplier (ratio):	1.0
+Object First Layer Flow Rate Perimeter Multiplier (ratio):	1.0
 Operating Nozzle Lift over Layer Thickness (ratio):	1.0
 Raft Additional Margin over Length (%):	1.0
 Raft Margin (mm):	3.0
