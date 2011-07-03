@@ -1,7 +1,7 @@
 Format is tab separated skeinforge settings.
 _Name                          	Value
 WindowPosition	228+22
-Open File for Skeinforge	/Users/eagleapex/Bronzebot/gregswade/gregs-wade-v3.stl
+Open File for Skeinforge	/Users/eagleapex/Dropbox/hive76/printing/moldable-gregs-wade.stl
 analyze	False
 craft	True
 help	False
