@@ -30,10 +30,10 @@ multiply	False
 oozebane	False
 outset	False
 preface	False
-raft	True
+raft	False
 scale	False
 skirt	False
-speed	False
+speed	True
 splodge	False
 stretch	False
 temperature	False
