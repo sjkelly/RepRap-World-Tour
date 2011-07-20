@@ -20,12 +20,12 @@ Grid Circular	False
 Grid Hexagonal	False
 Grid Rectangular	False
 Line	True
-Infill Perimeter Overlap (ratio):	0.1
-Infill Solidity (ratio):	0.1
-Infill Width over Thickness (ratio):	1.7
+Infill Perimeter Overlap (ratio):	0.15
+Infill Solidity (ratio):	0.15
+Infill Width over Thickness (ratio):	1.65
 Solid Surface Thickness (layers):	3
-Lower Left	True
-Nearest	False
+Lower Left	False
+Nearest	True
 Infill > Loops > Perimeter	False
 Infill > Perimeter > Loops	False
 Loops > Infill > Perimeter	False
