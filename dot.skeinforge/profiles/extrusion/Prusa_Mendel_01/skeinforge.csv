@@ -1,7 +1,7 @@
 Format is tab separated skeinforge settings.
 _Name                          	Value
 WindowPosition	228+22
-Open File for Skeinforge	/Users/eagleapex/Documents/Designs/Hive Logo printed/hexes printed.stl
+Open File for Skeinforge	/Users/eagleapex/Dropbox/hive76/printing/spout.stl
 analyze	False
 craft	True
 help	False
