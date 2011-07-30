@@ -26,14 +26,14 @@ lash	False
 lift	False
 limit	False
 mill	False
-multiply	True
+multiply	False
 oozebane	False
 outset	False
 preface	False
 raft	False
 scale	False
 skirt	False
-speed	False
+speed	True
 splodge	False
 stretch	False
 temperature	False
