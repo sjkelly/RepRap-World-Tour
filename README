@@ -1,0 +1,13 @@
+This is a compilation of all software needed for the RepRap world tour, or any for that matter. Each piece of software is the property of it's respective owner.
+
+How to use:
+
+Use Arduino to upload the sprinter files.
+Run Printrun/pronterface.py, and print the 20mm box.
+Starting off you should only need to adjust the Filament Packing Density under Dimension in Skeinforge.
+
+
+Recommended:
+If you aren't already, get on the #reprap IRC channel on freenode. The people are very friendly and can help you out.
+Keep your software up to date. You can find both Sprinter (firmware) and Printrun (host package) at http://www.github.com/kliment
+
