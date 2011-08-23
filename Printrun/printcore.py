@@ -2,7 +2,7 @@
 from serial import Serial
 from threading import Thread
 import time
-import getopt, sys
+import sys
 
 class printcore():
     def __init__(self,port=None,baud=None):
@@ -80,29 +80,46 @@ class printcore():
             if(len(line)>1):
                 self.log+=[line]
                 if self.recvcb is not None:
-                    self.recvcb(line)
-                
+                    try:
+                        self.recvcb(line)
+                    except:
+                        pass
                 if self.loud:
                     print "RECV: ",line.rstrip()
+            if(line.startswith('DEBUG_')):
+                continue
             if(line.startswith('start') or line.startswith('ok')):
                 self.clear=True
             if(line.startswith('start') or line.startswith('ok') or "T:" in line):
                 if (not self.online or line.startswith('start')) and self.onlinecb is not None:
-                    self.onlinecb()
+                    try:
+                        self.onlinecb()
+                    except:
+                        pass
                 self.online=True
                 if(line.startswith('ok')):
-                    self.resendfrom=-1
+                    #self.resendfrom=-1
                     #put temp handling here
                     if "T:" in line and self.tempcb is not None:
-                        self.tempcb(line)
+                        try:
+                            self.tempcb(line)
+                        except:
+                            pass
                     #callback for temp, status, whatever
             elif(line.startswith('Error')):
                 if self.errorcb is not None:
-                    self.errorcb(line)
+                    try:
+                        self.errorcb(line)
+                    except:
+                        pass
                 #callback for errors
                 pass
             if "resend" in line.lower() or "rs" in line:
-                toresend=int(line.replace("N:"," ").replace("N"," ").replace(":"," ").split()[-1])
+                try:
+                    toresend=int(line.replace("N:"," ").replace("N"," ").replace(":"," ").split()[-1])
+                except:
+                    if "rs" in line:
+                        toresend=int(line.split()[1])
                 self.resendfrom=toresend
                 self.clear=True
         self.clear=True
@@ -172,11 +189,17 @@ class printcore():
     def _print(self):
         #callback for printing started
         if self.startcb is not None:
-            self.startcb()
+            try:
+                self.startcb()
+            except:
+                pass
         while(self.printing and self.printer and self.online):
             self._sendnext()
         if self.endcb is not None:
-            self.endcb()
+            try:
+                self.endcb()
+            except:
+                pass
         #callback for printing done
         
     def _sendnext(self):
@@ -199,7 +222,8 @@ class printcore():
             return
         if(self.printing and self.queueindex<len(self.mainqueue)):
             tline=self.mainqueue[self.queueindex]
-            if(not tline.startswith(';') and len(tline)>0):
+            tline=tline.split(";")[0]
+            if(len(tline)>0):
                 self._send(tline,self.lineno,True)
                 self.lineno+=1
             else:
@@ -224,7 +248,10 @@ class printcore():
             if self.loud:
                 print "SENT: ",command
             if self.sendcb is not None:
-                self.sendcb(command)
+                try:
+                    self.sendcb(command)
+                except:
+                    pass
             self.printer.write(command+"\n")
 
 if __name__ == '__main__':

@@ -19,6 +19,67 @@ except:
 def dosify(name):
     return os.path.split(name)[1].split(".")[0][:8]+".g"
 
+def totalelength(g):
+    tot=0
+    cur=0
+    for i in g:
+        if "E" in i and ("G1" in i or "G0" in i):
+            try:
+                cur=float(i.split("E")[1].split(" ")[0])
+            except:
+                pass
+        elif "G92" in i and "E0" in i:
+            tot+=cur
+    return tot
+
+
+class Settings:
+    #def _temperature_alias(self): return {"pla":210,"abs":230,"off":0}
+    #def _temperature_validate(self,v):
+    #    if v < 0: raise ValueError("You cannot set negative temperatures. To turn the hotend off entirely, set its temperature to 0.")
+    #def _bedtemperature_alias(self): return {"pla":60,"abs":110,"off":0}
+    def _baudrate_list(self): return ["2400", "9600", "19200", "38400", "57600", "115200"]
+    def __init__(self):
+        # defaults here.
+        # the initial value determines the type
+        self.port = ""
+        self.baudrate = 115200
+        self.temperature_pla = 210.0
+        self.temperature_abs = 230.0
+        self.bedtemp_pla = 60.0
+        self.bedtemp_abs = 110.0
+        self.xy_feedrate = 3000
+        self.z_feedrate = 200
+        self.e_feedrate = 300
+    def _set(self,key,value):
+        try:
+            value = getattr(self,"_%s_alias"%key)()[value]
+        except KeyError:
+            pass
+        except AttributeError:
+            pass
+        try:
+            getattr(self,"_%s_validate"%key)(value)
+        except AttributeError:
+            pass
+        setattr(self,key,type(getattr(self,key))(value))
+        try:
+            getattr(self,"_%s_cb"%key)(key,value)
+        except AttributeError:
+            pass
+        return value
+    def _tabcomplete(self,key):
+        try:
+            return getattr(self,"_%s_list"%key)()
+        except AttributeError:
+            pass
+        try:
+            return getattr(self,"_%s_alias"%key)().keys()
+        except AttributeError:
+            pass
+        return []
+    def _all_settings(self):
+        return dict([(k,getattr(self,k)) for k in self.__dict__.keys() if not k.startswith("_")])
 
 class pronsole(cmd.Cmd):
     def __init__(self):
@@ -40,13 +101,26 @@ class pronsole(cmd.Cmd):
         self.percentdone=0
         self.tempreadings=""
         self.macros={}
+        self.rc_loaded=False
         self.processing_rc=False
-        self.lastport = (None,None)
+        self.processing_args=False
+        self.settings = Settings()
+        self.settings._port_list = self.scanserial
+        self.settings._temperature_abs_cb = self.set_temp_preset
+        self.settings._temperature_pla_cb = self.set_temp_preset
+        self.settings._bedtemp_abs_cb = self.set_temp_preset
+        self.settings._bedtemp_pla_cb = self.set_temp_preset
         self.monitoring=0
-        self.feedxy=3000
-        self.feedz=200
-        self.feede=300
-        
+    
+    def set_temp_preset(self,key,value):
+        if not key.startswith("bed"):
+            self.temps["pla"] = str(self.settings.temperature_pla)
+            self.temps["abs"] = str(self.settings.temperature_abs)
+            print "Hotend temperature presets updated, pla:%s, abs:%s" % (self.temps["pla"],self.temps["abs"])
+        else:
+            self.bedtemps["pla"] = str(self.settings.bedtemp_pla)
+            self.bedtemps["abs"] = str(self.settings.bedtemp_abs)
+            print "Bed temperature presets updated, pla:%s, abs:%s" % (self.bedtemps["pla"],self.bedtemps["abs"])
         
     def scanserial(self):
         """scan for available ports. return a list of device names."""
@@ -81,7 +155,7 @@ class pronsole(cmd.Cmd):
         if (len(line.split())==2 and line[-1] != " ") or (len(line.split())==1 and line[-1]==" "):
             return [i for i in self.macros.keys() if i.startswith(text)]
         elif(len(line.split())==3 or (len(line.split())==2 and line[-1]==" ")):
-            return ["/D", "/S"] + self.completenames(text)
+            return [i for i in ["/D", "/S"] + self.completenames(text) if i.startswith(text)]
         else:
             return []
     
@@ -93,28 +167,73 @@ class pronsole(cmd.Cmd):
             self.end_macro()
             # pass the unprocessed line to regular command processor to not require empty line in .pronsolerc
             return self.onecmd(l)
-        if ls.startswith('#'): return
-        if ls.startswith('!'):
-            self.cur_macro += ws + ls[1:] + "\n" # python mode
-        else:
-            self.cur_macro += ws + 'self.onecmd("'+ls+'".format(*arg))\n' # parametric command mode
         self.cur_macro_def += l + "\n"
     
     def end_macro(self):    
         if self.__dict__.has_key("onecmd"): del self.onecmd # remove override
-        if not self.processing_rc:
-            print "Macro '"+self.cur_macro_name+"' defined"
-            #print self.cur_macro+"------------" # debug
         self.prompt="PC>"
         if self.cur_macro_def!="":
             self.macros[self.cur_macro_name] = self.cur_macro_def
-            exec self.cur_macro
+            macro = self.compile_macro(self.cur_macro_name,self.cur_macro_def)
             setattr(self.__class__,"do_"+self.cur_macro_name,lambda self,largs,macro=macro:macro(self,*largs.split()))
             setattr(self.__class__,"help_"+self.cur_macro_name,lambda self,macro_name=self.cur_macro_name: self.subhelp_macro(macro_name))
+            if not self.processing_rc:
+                print "Macro '"+self.cur_macro_name+"' defined"
+                # save it
+                if not self.processing_args:
+                    macro_key = "macro "+self.cur_macro_name
+                    macro_def = macro_key
+                    if "\n" in self.cur_macro_def:
+                        macro_def += "\n"
+                    else:
+                        macro_def += " "
+                    macro_def += self.cur_macro_def
+                    self.save_in_rc(macro_key,macro_def)
         else:
             print "Empty macro - cancelled"
-        del self.cur_macro,self.cur_macro_name,self.cur_macro_def
+        del self.cur_macro_name,self.cur_macro_def
+    
+    def compile_macro_line(self,line):
+        line = line.rstrip()
+        ls = line.lstrip()
+        ws = line[:len(line)-len(ls)] # just leading whitespace
+        if ls=="" or ls.startswith('#'): return "" # no code
+        if ls.startswith('!'):
+            return ws + ls[1:] + "\n" # python mode
+        else:
+            return ws + 'self.onecmd("'+ls+'".format(*arg))\n' # parametric command mode
+    
+    def compile_macro(self,macro_name,macro_def):
+        if macro_def.strip() == "":
+            print "Empty macro - cancelled"
+            return
+        pycode = "def macro(self,*arg):\n"
+        if "\n" not in macro_def.strip():
+            pycode += self.compile_macro_line("  "+macro_def.strip())
+        else:
+            lines = macro_def.split("\n")
+            for l in lines:
+                pycode += self.compile_macro_line(l)
+        exec pycode
+        return macro
         
+    def start_macro(self,macro_name,prev_definition="",suppress_instructions=False):
+        if not self.processing_rc and not suppress_instructions:
+            print "Enter macro using indented lines, end with empty line"
+        self.cur_macro_name = macro_name
+        self.cur_macro_def = ""
+        self.onecmd = self.hook_macro # override onecmd temporarily
+        self.prompt="..>"
+        
+    def delete_macro(self,macro_name):
+        if macro_name in self.macros.keys():
+            delattr(self.__class__,"do_"+macro_name)
+            del self.macros[macro_name]
+            print "Macro '"+macro_name+"' removed"
+            if not self.processing_rc and not self.processing_args:
+                self.save_in_rc("macro "+macro_name,"")
+        else:
+            print "Macro '"+macro_name+"' is not defined"
     def do_macro(self,args):
         if args.strip()=="":
             self.print_topics("User-defined macros",self.macros.keys(),15,80)
@@ -127,31 +246,19 @@ class pronsole(cmd.Cmd):
         if len(arglist) == 2:
             macro_def = arglist[1]
             if macro_def.lower() == "/d":
-                if macro_name in self.macros.keys():
-                    delattr(self.__class__,"do_"+macro_name)
-                    del self.macros[macro_name]
-                    print "Macro '"+macro_name+"' removed"
-                else:
-                    print "Macro '"+macro_name+"' is not defined"
+                self.delete_macro(macro_name)
                 return
             if macro_def.lower() == "/s":
                 self.subhelp_macro(macro_name)
                 return
             self.cur_macro_def = macro_def
             self.cur_macro_name = macro_name
-            if macro_def.startswith("!"):
-                self.cur_macro = "def macro(self,*arg):\n  "+macro_def[1:]+"\n"
-            else:
-                self.cur_macro = "def macro(self,*arg):\n  self.onecmd('"+macro_def+"'.format(*arg))\n"
             self.end_macro()
             return
-        if not self.processing_rc:
-            print "Enter macro using indented lines, end with empty line"
-        self.cur_macro_name = macro_name
-        self.cur_macro_def = ""
-        self.cur_macro = "def macro(self,*arg):\n"
-        self.onecmd = self.hook_macro # override onecmd temporarily
-        self.prompt="..>"
+        if self.macros.has_key(macro_name):
+            self.start_macro(macro_name,self.macros[macro_name])
+        else:
+            self.start_macro(macro_name)
     
     def help_macro(self):
         print "Define single-line macro: macro <name> <definition>"
@@ -172,32 +279,138 @@ class pronsole(cmd.Cmd):
                 print "Macro '"+macro_name+"' defined as: '"+macro_def+"'"
         else:
             print "Macro '"+macro_name+"' is not defined"
+
+    def set(self,var,str):
+        try:
+            t = type(getattr(self.settings,var))
+            value = self.settings._set(var,str)
+            if not self.processing_rc and not self.processing_args:
+                self.save_in_rc("set "+var,"set %s %s" % (var,value))
+        except AttributeError:
+            print "Unknown variable '%s'" % var
+        except ValueError, ve:
+            print "Bad value for variable '%s', expecting %s (%s)" % (var,repr(t)[1:-1],ve.args[0])
+    
+    def do_set(self,argl):
+        args = argl.split(None,1)
+        if len(args) < 1:
+            for k in [kk for kk in dir(self.settings) if not kk.startswith("_")]:
+                print "%s = %s" % (k,str(getattr(self.settings,k)))
+            return
+            value = getattr(self.settings,args[0])
+        if len(args) < 2:
+            try:
+                print "%s = %s" % (args[0],getattr(self.settings,args[0]))
+            except AttributeError:
+                print "Unknown variable '%s'" % args[0]
+            return
+        self.set(args[0],args[1])
+    
+    def help_set(self):
+        print "Set variable:   set <variable> <value>"
+        print "Show variable:  set <variable>"
+        print "'set' without arguments displays all variables"
+
+    def complete_set(self, text, line, begidx, endidx):
+        if (len(line.split())==2 and line[-1] != " ") or (len(line.split())==1 and line[-1]==" "):
+            return [i for i in dir(self.settings) if not i.startswith("_") and i.startswith(text)]
+        elif(len(line.split())==3 or (len(line.split())==2 and line[-1]==" ")):
+            return [i for i in self.settings._tabcomplete(line.split()[1]) if i.startswith(text)]
+        else:
+            return []
     
     def postloop(self):
         self.p.disconnect()
         cmd.Cmd.postloop(self)
     
-    def preloop(self):
+    def load_rc(self,rc_filename):
         self.processing_rc=True
         try:
-            rc=open(os.path.join(os.path.expanduser("~"),".pronsolerc"))
+            rc=open(rc_filename)
+            self.rc_filename = os.path.abspath(rc_filename)
             for rc_cmd in rc:
                 if not rc_cmd.lstrip().startswith("#"):
                     self.onecmd(rc_cmd)
             rc.close()
+            if hasattr(self,"cur_macro_def"):
+                self.end_macro()
+            self.rc_loaded = True
+        finally:
+            self.processing_rc=False
+    
+    def load_default_rc(self,rc_filename=".pronsolerc"):
+        try:
+            try:
+                self.load_rc(os.path.join(os.path.expanduser("~"),rc_filename))
+            except IOError:
+                self.load_rc(rc_filename)
         except IOError:
-            pass
-        self.processing_rc=False
+            # make sure the filename is initialized
+            self.rc_filename = os.path.abspath(os.path.join(os.path.expanduser("~"),rc_filename))
+    
+    def save_in_rc(self,key,definition):
+        """
+        Saves or updates macro or other definitions in .pronsolerc 
+        key is prefix that determines what is being defined/updated (e.g. 'macro foo')
+        definition is the full definition (that is written to file). (e.g. 'macro foo move x 10')
+        Set key as empty string to just add (and not overwrite)
+        Set definition as empty string to remove it from .pronsolerc
+        To delete line from .pronsolerc, set key as the line contents, and definition as empty string
+        Only first definition with given key is overwritten.
+        Updates are made in the same file position.
+        Additions are made to the end of the file.
+        """
+        rci,rco = None,None
+        if definition != "" and not definition.endswith("\n"):
+            definition += "\n"
+        try:
+            written = False
+            rco=open(self.rc_filename+"~new","w")
+            if os.path.exists(self.rc_filename):
+                rci=open(self.rc_filename,"r")
+                overwriting = False
+                for rc_cmd in rci:
+                    l = rc_cmd.rstrip()
+                    ls = l.lstrip()
+                    ws = l[:len(l)-len(ls)] # just leading whitespace
+                    if overwriting and len(ws) == 0:
+                        overwriting = False
+                    if not written and key != "" and  rc_cmd.startswith(key) and (rc_cmd+"\n")[len(key)].isspace():
+                        overwriting = True
+                        written = True
+                        rco.write(definition)
+                    if not overwriting:
+                        rco.write(rc_cmd)
+                        if not rc_cmd.endswith("\n"): rco.write("\n")
+            if not written:
+                rco.write(definition)
+            if rci is not None:
+                rci.close()
+                if os.path.exists(self.rc_filename+"~old"):
+                    os.remove(rci.name+"~old")
+                os.rename(rci.name,rci.name+"~old")
+            rco.close()
+            os.rename(rco.name,self.rc_filename)
+            #if definition != "":
+            #    print "Saved '"+key+"' to '"+self.rc_filename+"'"
+            #else:
+            #    print "Removed '"+key+"' from '"+self.rc_filename+"'"
+        except Exception, e:
+            print "Saving failed for",key+":",str(e)
+        finally:
+            del rci,rco
+    
+    def preloop(self):
         print "Welcome to the printer console! Type \"help\" for a list of available commands."
         cmd.Cmd.preloop(self)
     
     def do_connect(self,l):
         a=l.split()
         p=self.scanserial()
-        port=self.lastport[0]
-        if (port is None or port not in p) and len(p)>0:
+        port=self.settings.port
+        if (port == "" or port not in p) and len(p)>0:
             port=p[0] 
-        baud=self.lastport[1] or 115200
+        baud=self.settings.baudrate or 115200
         if(len(a)>0):
             port=a[0]
         if(len(a)>1):
@@ -205,12 +418,17 @@ class pronsole(cmd.Cmd):
                 baud=int(a[1])
             except:
                 print "Bad baud value '"+a[1]+"' ignored"
-        if len(p)==0 and port is None:
+        if len(p)==0 and not port:
             print "No serial ports detected - please specify a port"
             return
         if len(a)==0:
             print "No port specified - connecting to %s at %dbps" % (port,baud)
-        self.lastport = (port, baud)
+        if port != self.settings.port:
+            self.settings.port = port
+            self.save_in_rc("set port","set port %s" % port)
+        if baud != self.settings.baudrate:
+            self.settings.baudrate = baud
+            self.save_in_rc("set baudrate","set baudrate %d" % baud)
         self.p.connect(port, baud)
     
     def help_connect(self):
@@ -444,7 +662,7 @@ class pronsole(cmd.Cmd):
         
     def do_sdprint(self,l):
         if not self.p.online:
-            print "Printer is not online. Try connect to it first."
+            print   "Printer is not online. Try connect to it first."
             return
         self.listing=2
         self.sdfiles=[]
@@ -585,20 +803,18 @@ class pronsole(cmd.Cmd):
         if not self.p.online:
             print "Printer is not online. Unable to move."
             return
-        feed=self.feedz
-        axis="E"
         l=l.split()
         if(l[0].lower()=="x"):
-            feed=self.feedxy
+            feed=self.settings.xy_feedrate
             axis="X"
         elif(l[0].lower()=="y"):
-            feed=self.feedxy
+            feed=self.settings.xy_feedrate
             axis="Y"
         elif(l[0].lower()=="z"):
-            feed=self.feedz
+            feed=self.settings.z_feedrate
             axis="Z"
         elif(l[0].lower()=="e"):
-            feed=self.feede
+            feed=self.settings.e_feedrate
             axis="E"
         else:
             print "Unknown axis."
@@ -619,9 +835,9 @@ class pronsole(cmd.Cmd):
         
     def help_move(self):
         print "Move an axis. Specify the name of the axis and the amount. "
-        print "move X 10 will move the X axis forward by 10mm at ",self.feedxy,"mm/min (default XY speed)"
+        print "move X 10 will move the X axis forward by 10mm at ",self.settings.xy_feedrate,"mm/min (default XY speed)"
         print "move Y 10 5000 will move the Y axis forward by 10mm at 5000mm/min"
-        print "move Z -1 will move the Z axis down by 1mm at ",self.feedz,"mm/min (default Z speed)"
+        print "move Z -1 will move the Z axis down by 1mm at ",self.settings.z_feedrate,"mm/min (default Z speed)"
         print "Common amounts are in the tabcomplete list."
     
     def complete_move(self, text, line, begidx, endidx):
@@ -640,7 +856,7 @@ class pronsole(cmd.Cmd):
     
     def do_extrude(self,l,override=None,overridefeed=300):
         length=5#default extrusion length
-        feed=self.feede#default speed
+        feed=self.settings.e_feedrate#default speed
         if not self.p.online:
             print "Printer is not online. Unable to move."
             return
@@ -680,7 +896,7 @@ class pronsole(cmd.Cmd):
         
     def do_reverse(self, l):
         length=5#default extrusion length
-        feed=self.feede#default speed
+        feed=self.settings.e_feedrate#default speed
         if not self.p.online:
             print "Printer is not online. Unable to move."
             return
@@ -814,27 +1030,11 @@ class pronsole(cmd.Cmd):
             print "Printer is currently printing. Please pause the print before you issue manual commands."
             return
         if "x" in l.lower():
-            self.do_move("X -250")
-            self.p.send_now("G92 X0")
-            self.do_move("X 5 200")
-            self.do_move("X -10 200")
-            self.do_move("X 0.1")
-            self.do_move("X -0.1")
-            self.p.send_now("G92 X0")
+            self.p.send_now("G28 X0")
         if "y" in l.lower():
-            self.do_move("Y -250")
-            self.p.send_now("G92 Y0")
-            self.do_move("Y 5 200")
-            self.do_move("Y -10 200")
-            self.do_move("Y 0.1")
-            self.do_move("Y -0.1")
-            self.p.send_now("G92 Y0")
+            self.p.send_now("G28 Y0")
         if "z" in l.lower():
-            self.do_move("Z -250")
-            self.p.send_now("G92 Z0")
-            self.do_move("Z 2")
-            self.do_move("Z -3")
-            self.p.send_now("G92 Z0")
+            self.p.send_now("G28 Z0")
         if "e" in l.lower():
             self.p.send_now("G92 E0")
         if not len(l):
@@ -843,17 +1043,38 @@ class pronsole(cmd.Cmd):
             
     def help_home(self):
         print "Homes the printer"
-        print "home - homes all axes and zeroes the extruder(Using G28)"
-        print "home xy - homes x and y axes (Using G1 and G92)"
-        print "home z - homes z axis only (Using G1 and G92)"
+        print "home - homes all axes and zeroes the extruder(Using G28 and G92)"
+        print "home xy - homes x and y axes (Using G28)"
+        print "home z - homes z axis only (Using G28)"
         print "home e - set extruder position to zero (Using G92)"
-        print "home xyz - homes all axes (Using G1 and G92)"
-        print "home xyze - homes all axes and zeroes the extruder (Using G1 and G92)"
+        print "home xyze - homes all axes and zeroes the extruder (Using G28 and G92)"
         
+    def parse_cmdline(self,args):
+        import getopt
+        opts,args = getopt.getopt(args, "c:e:h", ["conf=","config=","help"])
+        for o,a in opts:
+            #print repr((o,a))
+            if o in ("-c","--conf","--config"):
+                self.load_rc(a)
+            elif o in ("-h","--help"):
+                print "Usage: "+sys.argv[0]+' [-c filename [-c filename2 ... ] ] [-e "command" ...]'
+                print "  -c | --conf | --config   - override startup .pronsolerc file"
+                print "     may chain config files, settings auto-save will go into last file in the chain"
+                print '  -e <command> - executes command after configuration/.pronsolerc is loaded'
+                print "     macros/settings from these commands are not autosaved"
+                sys.exit()
+        if not self.rc_loaded:
+            self.load_default_rc()
+        for o,a in opts:
+            if o == "-e":
+                self.processing_args = True
+                self.onecmd(a)
+                self.processing_args = False
 
 if __name__=="__main__":
     
     interp=pronsole()
+    interp.parse_cmdline(sys.argv[1:])
     try:
         interp.cmdloop()
     except:
