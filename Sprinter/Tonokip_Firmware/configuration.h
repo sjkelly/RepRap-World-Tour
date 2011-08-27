@@ -86,10 +86,11 @@ float min_constant_speed_units = 2; // the minimum units of an accelerated move 
 // units are in millimeters or whatever length unit you prefer: inches,football-fields,parsecs etc
 
 //Calibration variables
+//RRWT 000000002 is 1/16th stepping on x and y (MS1, MS2, and MS3), full stepping on z (no jumpers), and 1/4th stepping on extruder (MS2 only)
 float x_steps_per_unit = 80;
 float y_steps_per_unit = 80;
 float z_steps_per_unit = 200/1.25;
-float e_steps_per_unit = 32*2;
+float e_steps_per_unit = 800/(7.25*3.14159)*(39/11);
 float max_feedrate = 200000; //mmm, acceleration!
 float max_z_feedrate = 500;
 
