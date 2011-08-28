@@ -1,9 +1,0 @@
-Format is tab separated skeinforge settings.
-_Name                          	Value
-WindowPosition	228+22
-Open File for Skeinforge	/Users/eagleapex/Dropbox/hive76/printing/to skein/cityhall12.stl
-analyze	False
-craft	False
-help	False
-meta	True
-profile	False

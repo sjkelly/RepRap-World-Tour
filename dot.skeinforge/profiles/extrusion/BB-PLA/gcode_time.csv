@@ -1,0 +1,11 @@
+Format is tab separated gcode time settings.
+_Name                          	Value
+WindowPosition	346+156
+Add Space Between Words	True
+Open File to be Converted to Gcode Time	
+Initial Time (s)	1.0
+Time Step (mcs)	1000.0
+X Step per mm	0.1
+Y Step per mm	0.1
+Z Step per mm	0.1
+E Step per mm	0.1
