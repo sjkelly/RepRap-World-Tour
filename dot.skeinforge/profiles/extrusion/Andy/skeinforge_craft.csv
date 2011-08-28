@@ -3,7 +3,7 @@ _Name                          	Value
 WindowPosition	600+0
 Open File for Craft	
 bottom	False
-carve	False
+carve	True
 chamber	False
 chop	False
 cleave	False
@@ -13,7 +13,7 @@ comb	False
 cool	False
 dimension	False
 drill	False
-export	True
+export	False
 feed	False
 fill	False
 fillet	False
