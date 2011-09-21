@@ -3,7 +3,7 @@ macro up move Z 10
 macro loud !self.p.loud = 1
 macro quiet !self.p.loud = 0
 set port /dev/tty.usbserial-A400AZHI
-set last_temperature 190.0
+set last_temperature 175.0
 set last_bed_temperature 65.0
 set last_file_path /Users/jmil/G3_Documents/Blender/Tutorials/Torso
 set xy_feedrate 20000
