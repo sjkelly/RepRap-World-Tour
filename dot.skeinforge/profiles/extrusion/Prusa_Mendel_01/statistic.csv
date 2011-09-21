@@ -6,6 +6,6 @@ Machine Time ($/hour):	1.0
 Material ($/kg):	20.0
 Density (kg/m3):	930.0
 Extrusion Diameter over Thickness (ratio):	1.8
-Open File to Generate Statistics for	/Users/jmil/G3_Documents/MakerBot/PrintMe!/Yoda/Yoda-Lite_Medium_export.gcode
+Open File to Generate Statistics for	/Users/jmil/G3_Documents/MakerBot/Firmware/GitHub_Development/tesla893_RepRap-World-Tour/Objects/20mmbox_export.gcode
 Print Statistics	True
 Save Statistics	True
