@@ -5,7 +5,7 @@ Activate Statistic	True
 Machine Time ($/hour):	1.0
 Material ($/kg):	20.0
 Density (kg/m3):	930.0
-Extrusion Diameter over Thickness (ratio):	1.25
-Open File to Generate Statistics for	
+Extrusion Diameter over Thickness (ratio):	1.8
+Open File to Generate Statistics for	/Users/jmil/G3_Documents/MakerBot/PrintMe!/Yoda/Yoda-Lite_Medium_export.gcode
 Print Statistics	True
-Save Statistics	False
+Save Statistics	True

@@ -22,7 +22,7 @@ home	False
 hop	False
 inset	False
 jitter	False
-lash	False
+lash	True
 lift	False
 limit	False
 mill	False
@@ -36,7 +36,7 @@ skirt	False
 speed	False
 splodge	False
 stretch	False
-temperature	True
+temperature	False
 tower	False
 unpause	False
 whittle	False

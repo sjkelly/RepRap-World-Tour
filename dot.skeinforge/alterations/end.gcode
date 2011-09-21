@@ -1,5 +1,5 @@
-M104 S0
-M140 S0
-G1 X0 Y0 F2000
-M84
-
+M104 S0 (turn off extruder)
+M140 S0 (turn off heated bed)
+G1 Y190 F2000 (present part to user)
+M84 (Turn off motors)
+M106 (Turn Fan on to cool part down)
