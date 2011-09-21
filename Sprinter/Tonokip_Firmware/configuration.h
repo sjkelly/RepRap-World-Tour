@@ -87,8 +87,8 @@ float min_constant_speed_units = 2; // the minimum units of an accelerated move 
 
 //Calibration variables
 //RRWT 000000002 is 1/16th stepping on x and y (MS1, MS2, and MS3), full stepping on z (no jumpers), and 1/4th stepping on extruder (MS2 only)
-float x_steps_per_unit = 80;
-float y_steps_per_unit = 80;
+float x_steps_per_unit = 52.913851209772999;
+float y_steps_per_unit = 52.913851209772999;
 float z_steps_per_unit = 200/1.25;
 float e_steps_per_unit = 800/(7.25*3.14159)*(39/11);
 float max_feedrate = 200000; //mmm, acceleration!
@@ -148,7 +148,7 @@ const bool min_software_endstops = false; //If true, axis won't move to coordina
 const bool max_software_endstops = true;  //If true, axis won't move to coordinates greater than the defined lengths below.
 const int X_MAX_LENGTH = 220;
 const int Y_MAX_LENGTH = 220;
-const int Z_MAX_LENGTH = 100;
+const int Z_MAX_LENGTH = 130;
 
 #define BAUDRATE 115200
 

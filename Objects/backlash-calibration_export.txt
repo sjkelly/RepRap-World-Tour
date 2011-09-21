@@ -1,0 +1,56 @@
+ 
+Cost
+Machine time cost is 0.06$.
+Material cost is 0.03$.
+Total cost is 0.09$.
+ 
+Extent
+X axis extrusion starts at 72 mm and ends at 118 mm, for a width of 46 mm.
+Y axis extrusion starts at 72 mm and ends at 118 mm, for a depth of 46 mm.
+Z axis extrusion starts at 0 mm and ends at 6 mm, for a height of 5 mm.
+ 
+Extruder
+Build time is 3 minutes 31 seconds.
+Distance extruded is 3256.9 mm.
+Distance traveled is 3549.2 mm.
+Extruder speed is 56.0
+Extruder was extruding 91.8 percent of the time.
+Extruder was toggled 26 times.
+Operating flow rate is 114.0 mm3/s.
+Feed rate average is 16.8 mm/s, (1009.7 mm/min).
+ 
+Filament
+Cross section area is 0.41 mm2.
+Extrusion diameter is 0.72 mm.
+Extrusion fill density ratio is 1.4
+ 
+Material
+Mass extruded is 1.4 grams.
+Volume extruded is 1.3 cc.
+ 
+Meta
+Text has 1453 lines and a size of 62.0 KB.
+Version is 11.04.26
+ 
+Procedures
+carve
+bottom
+preface
+inset
+fill
+multiply
+speed
+raft
+skirt
+clip
+cool
+limit
+dimension
+ 
+Profile
+Prusa_Mendel_01
+ 
+Slice
+Layer thickness is 0.4 mm.
+Perimeter width is 0.72 mm.
+ 
