@@ -1,7 +1,7 @@
 Format is tab separated skeinforge settings.
 _Name                          	Value
 WindowPosition	0+25
-Open File for Skeinforge	/Users/eagleapex/Documents/Designs/2L screw/octocap.11.stl
+Open File for Skeinforge	/Users/eagleapex/Bronzebot/Test obj/testobjx2.stl
 analyze	False
 craft	True
 help	False

@@ -1,7 +1,7 @@
 Format is tab separated skeinforge settings.
 _Name                          	Value
 WindowPosition	0+25
-Open File for Skeinforge	/Users/eagleapex/Downloads/Whistle.stl
+Open File for Skeinforge	/Users/eagleapex/Downloads/bike_stache.stl
 analyze	False
 craft	True
 help	False
